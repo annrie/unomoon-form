@@ -3,6 +3,8 @@
 # WordPress.org へ提出する zip には配布物だけを含める(allowlist 方式)。
 # 除外: assets/(.org 用スクリーンショット) languages/(translate.wordpress.org で管理)
 #       README.md scripts/ tools/ tasks/ packaged/ .git .DS_Store
+# WordPress.org への配信は .github/workflows/deploy-wordpress-org.yml が .distignore を使って行う。
+# ここの allowlist を変えたら .distignore も同じ結果になるように更新すること。
 
 set -e
 
