@@ -1,11 +1,26 @@
 name: Deploy to WordPress.org
 
-# v<version> タグを push すると WordPress.org の SVN(trunk/ tags/<version>/ assets/)へ配信する。
-# 手動実行(workflow_dispatch)は常に dry-run: SVN へはコミットせず、trunk に入る中身を確認するため。
+# v<version> タグを push すると WordPress.org の SVN(trunk/ tags/<version>/ assets/)へ配信し、
+# 生成した zip を GitHub Release に添付する。
 #
-# 必要な Secrets: SVN_USERNAME / SVN_PASSWORD
-#   (WordPress.org プロフィール > Account & Security で生成した SVN パスワード)
-#   dry-run でも 10up のアクションが Secrets の存在を要求するので、先に登録しておくこと。
+# リリース手順(保守者向け):
+#   1. unomoon-form.php の `Version:` と readme.txt の `Stable tag:` を同じ値に上げ、
+#      readme.txt の Changelog を書いて main にマージする
+#   2. git tag v<version> && git push origin v<version>
+#      (タグ / Version / Stable tag が一致しない、または数字とピリオド以外を含むと失敗する)
+#   3. 同じ版の tags/ が SVN に既にある場合、10up のアクションは成功扱いでスキップする。
+#      やり直したいときは版を上げる
+#
+# 手動実行(workflow_dispatch)は常に dry-run: SVN へはコミットせず、trunk に入る中身を
+# zip の artifact で確認できる。ワークフローが main に無いと手動実行はできない。
+#
+# 必要な Secrets(Repository secrets。Environment secrets ではない): SVN_USERNAME / SVN_PASSWORD
+#   SVN パスワードは WordPress.org プロフィール > Account & Security で生成する(ログインパスワードとは別)。
+#   dry-run でも 10up のアクション(2.3.0)は Secrets が無いと `Set the SVN_USERNAME secret` で
+#   止まる(2026-09-16 に実測)ので、先に登録しておくこと。
+#
+# trunk に入るファイルは .distignore で決まり、scripts/package.sh の allowlist と一致することを
+# デプロイ前に検証する。どちらかを変えたらもう一方も更新すること。
 
 on:
   push:

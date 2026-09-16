@@ -5,6 +5,30 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/github/license/annrie/unomoon-form.svg" alt="License">
   </a>
+  <!-- WordPress.org plugin version -->
+  <a href="https://wordpress.org/plugins/unomoon-form/">
+    <img src="https://img.shields.io/wordpress/plugin/v/unomoon-form.svg" alt="WordPress.org plugin version">
+  </a>
+  <!-- WordPress.org downloads -->
+  <a href="https://wordpress.org/plugins/unomoon-form/advanced/">
+    <img src="https://img.shields.io/wordpress/plugin/dt/unomoon-form.svg" alt="WordPress.org downloads">
+  </a>
+  <!-- WordPress.org active installs -->
+  <a href="https://wordpress.org/plugins/unomoon-form/advanced/">
+    <img src="https://img.shields.io/wordpress/plugin/installs/unomoon-form.svg" alt="WordPress.org active installs">
+  </a>
+  <!-- Latest release -->
+  <a href="https://github.com/annrie/unomoon-form/releases/latest">
+    <img src="https://img.shields.io/github/v/release/annrie/unomoon-form.svg" alt="Latest release">
+  </a>
+  <!-- Downloads total -->
+  <a href="https://github.com/annrie/unomoon-form/releases">
+    <img src="https://img.shields.io/github/downloads/annrie/unomoon-form/total.svg" alt="Total downloads">
+  </a>
+  <!-- Downloads latest release -->
+  <a href="https://github.com/annrie/unomoon-form/releases/latest">
+    <img src="https://img.shields.io/github/downloads/annrie/unomoon-form/latest/total.svg" alt="Latest release downloads">
+  </a>
   <!-- Stars -->
   <a href="https://github.com/annrie/unomoon-form/stargazers">
     <img src="https://img.shields.io/github/stars/annrie/unomoon-form.svg" alt="Stars">
@@ -15,7 +39,7 @@
   </a>
 </p>
 
-Unomoon Form is a WordPress 7 compatible fork of MW WP Form.
+Unomoon Form is a fork of MW WP Form, tested up to WordPress 7.1.
 
 Unomoon Form は、MW WP Form の開発停止を受けてフォークした、WordPress 7.1 検証済みのフォームプラグインです。
 
@@ -70,33 +94,29 @@ This plugin was named **Uno WP Form** until 5.1.6.1 and was renamed to comply wi
 
 ## Installation / インストール
 
-1. Upload the `unomoon-form` directory to `wp-content/plugins/`.
-2. Activate `Unomoon Form` in the WordPress admin.
+The plugin is available in the [WordPress.org plugin directory](https://wordpress.org/plugins/unomoon-form/).
+
+1. In the WordPress admin, go to **Plugins → Add New Plugin** and search for "Unomoon Form".
+2. Click **Install Now**, then **Activate**.
 3. Create or edit forms from the `Unomoon Form` admin menu.
 4. Place the generated shortcode on a page.
 
-1. `unomoon-form` ディレクトリを `wp-content/plugins/` にアップロードします。
-2. WordPress管理画面で `Unomoon Form` を有効化します。
+To install manually instead, download `unomoon-form-<version>.zip` from the [Releases page](https://github.com/annrie/unomoon-form/releases/latest) and upload it via **Plugins → Add New Plugin → Upload Plugin**, or unzip it into `wp-content/plugins/`. Do not use the "Download ZIP" button on GitHub: that archive contains development files and its top-level directory name will not match the plugin slug.
+
+このプラグインは [WordPress.org のプラグインディレクトリ](https://wordpress.org/plugins/unomoon-form/) で公開されています。
+
+1. WordPress 管理画面の **プラグイン → 新規プラグインを追加** で「Unomoon Form」を検索します。
+2. **今すぐインストール** → **有効化** をクリックします。
 3. `Unomoon Form` の管理メニューからフォームを作成または編集します。
 4. 生成されたショートコードを固定ページなどに配置します。
 
-## Releasing to WordPress.org / WordPress.org へのリリース
+手動でインストールする場合は、[Releases ページ](https://github.com/annrie/unomoon-form/releases/latest) から `unomoon-form-<version>.zip` をダウンロードし、**プラグイン → 新規プラグインを追加 → プラグインのアップロード** から追加するか、`wp-content/plugins/` に展開してください。GitHub の「Download ZIP」は開発用ファイルを含み、ディレクトリ名もプラグインのスラッグと一致しないので使わないでください。
 
-Development happens on GitHub; the WordPress.org SVN repository is only a release target. Pushing a `v<version>` tag runs `.github/workflows/deploy-wordpress-org.yml`, which deploys `trunk/`, `tags/<version>/` and `assets/` via [10up/action-wordpress-plugin-deploy](https://github.com/10up/action-wordpress-plugin-deploy) and attaches the generated zip to a GitHub Release. Files listed in `.distignore` are excluded from `trunk/`; the workflow fails if `.distignore` and the `scripts/package.sh` allowlist produce different file sets.
+## Releasing / リリース
 
-1. Bump `Version:` in `unomoon-form.php` and `Stable tag:` in `readme.txt` to the same value, update the changelog, and merge to `main`.
-2. `git tag v5.1.6.2 && git push origin v5.1.6.2` (the workflow fails if the tag, the `Version:` header and `Stable tag:` do not match).
-3. Optional: run the workflow manually from the Actions tab to perform a dry run (nothing is committed to SVN; the resulting zip is uploaded as a workflow artifact). The secrets below are required even for a dry run.
+Development happens on GitHub; the WordPress.org SVN repository is only a release target. Merging a pull request does not publish anything — pushing a `v<version>` tag runs the deploy workflow, which pushes the plugin to WordPress.org and attaches the zip to a GitHub Release. Pull requests targeting `main` are also checked with [Plugin Check](https://wordpress.org/plugins/plugin-check/). Maintainer notes live at the top of `.github/workflows/deploy-wordpress-org.yml`.
 
-Required repository secrets: `SVN_USERNAME` (WordPress.org username) and `SVN_PASSWORD` (generated under Account & Security on your WordPress.org profile).
-
-開発は GitHub で行い、WordPress.org の SVN はリリース先としてのみ使います。`v<version>` タグを push すると `.github/workflows/deploy-wordpress-org.yml` が動き、[10up/action-wordpress-plugin-deploy](https://github.com/10up/action-wordpress-plugin-deploy) で `trunk/`・`tags/<version>/`・`assets/` を配信し、生成された zip を GitHub Release に添付します。`.distignore` に列挙したファイルは `trunk/` から除外され、`.distignore` と `scripts/package.sh` の allowlist の結果が食い違うとワークフローは失敗します。
-
-1. `unomoon-form.php` の `Version:` と `readme.txt` の `Stable tag:` を同じ値に上げ、changelog を更新して `main` にマージします。
-2. `git tag v5.1.6.2 && git push origin v5.1.6.2` を実行します（タグ・`Version:` ヘッダ・`Stable tag:` が一致しないとワークフローは失敗します）。
-3. 任意: Actions タブからワークフローを手動実行すると dry run になります（SVN へはコミットせず、zip をワークフローの artifact として保存します）。dry run でも下記の Secrets は必要です。
-
-必要なリポジトリ Secrets: `SVN_USERNAME`（WordPress.org のユーザー名）と `SVN_PASSWORD`（WordPress.org プロフィールの Account & Security で生成）。
+開発は GitHub で行い、WordPress.org の SVN はリリース先としてのみ使います。プルリクエストをマージしただけでは公開されず、`v<version>` タグを push するとデプロイワークフローが WordPress.org へ配信し、zip を GitHub Release に添付します。また、`main` 宛のプルリクエストでは [Plugin Check](https://wordpress.org/plugins/plugin-check/) が実行されます。保守者向けの手順は `.github/workflows/deploy-wordpress-org.yml` の冒頭コメントにあります。
 
 ## Upstream / フォーク元
 
