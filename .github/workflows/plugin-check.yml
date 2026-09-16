@@ -1,0 +1,48 @@
+name: Plugin Check
+
+# WordPress.org の Plugin Check を配布物に対して実行する。
+# リポジトリ直下ではなく .distignore で絞った trunk 相当を渡すので、
+# README.md / tools/ / scripts/ など配布しないファイルは検査されない。
+# ビルド先のディレクトリ名がそのままプラグインのスラッグとして扱われるため unomoon-form 固定。
+# Plugin Check の出力パスはプラグインディレクトリ相対なので、注釈はリポジトリのファイルに付く。
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # 結果を PR コメントとして投稿するため。fork からの PR ではトークンが読み取り専用に落ちるので
+  # コメントは付かない(action 側で握りつぶし、チェック自体は実行される)
+  pull-requests: write
+
+concurrency:
+  group: plugin-check-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # deploy-wordpress-org.yml と同じ rsync で配布物を組み立てる(ワークスペース外に置く)
+      - name: Build distributable
+        id: build
+        run: |
+          set -euo pipefail
+          DIST="${RUNNER_TEMP}/unomoon-form"
+          mkdir -p "${DIST}"
+          rsync -rc --exclude-from=.distignore ./ "${DIST}/" --delete --delete-excluded
+          echo "files: $(find "${DIST}" -type f | wc -l)"
+          echo "dir=${DIST}" >> "$GITHUB_OUTPUT"
+
+      - name: Run Plugin Check
+        uses: WordPress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
+        with:
+          build-dir: ${{ steps.build.outputs.dir }}
+          wp-version: latest
