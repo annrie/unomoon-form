@@ -296,7 +296,7 @@ class Unomoon_Form_Main_Controller {
 		$is_admin_mail_sended = $Mail_Service->send_admin_mail();
 
 		if ( ! $is_admin_mail_sended ) {
-			error_log( 'Failed to send admin mail.' );
+			error_log( '[Unomoon Form] Failed to send admin mail.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Mail delivery failures must reach the PHP error log.
 			return false;
 		}
 
@@ -313,7 +313,7 @@ class Unomoon_Form_Main_Controller {
 			if ( $automatic_reply_email && ! $is_invalid_mail_address ) {
 				$is_reply_mail_sended = $Mail_Service->send_reply_mail();
 				if ( ! $is_reply_mail_sended ) {
-					error_log( 'Failed to send auto reply mail.' );
+					error_log( '[Unomoon Form] Failed to send auto reply mail.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Mail delivery failures must reach the PHP error log.
 				}
 			}
 		}
@@ -347,7 +347,7 @@ class Unomoon_Form_Main_Controller {
 			try {
 				$filepath = Unomoon_Form_Directory::generate_user_filepath( $form_id, $key, $upload_filename );
 			} catch ( \Exception $e ) {
-				error_log( $e->getMessage() );
+				error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report attachment path failures to the PHP error log.
 				continue;
 			}
 

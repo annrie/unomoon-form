@@ -133,7 +133,7 @@ class Unomoon_Form_Directory {
 				}
 			}
 		} catch ( \Exception $e ) {
-			error_log( $e->getMessage() );
+			error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report directory cleanup failures to the PHP error log.
 			return false;
 		}
 

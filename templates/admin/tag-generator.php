@@ -9,6 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included from _render() after extract(); these variables are method-local, not global.
+
 do_action( 'unomoonform_tag_generator_dialog' );
 
 $types = array(
@@ -40,7 +42,7 @@ $labels = apply_filters( 'unomoonform_tag_generator_labels', $labels );
 			$tag   = 'other' === $type ? 'unomoonform_tag_generator_option' : 'unomoonform_tag_generator_' . $type . '_option';
 			?>
 			<optgroup label="<?php echo esc_attr( $label ); ?>">
-				<?php do_action( $tag ); ?>
+				<?php do_action( $tag ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- $tag is built above with the unomoonform_tag_generator_ prefix. ?>
 			</optgroup>
 		<?php endforeach; ?>
 	</select>

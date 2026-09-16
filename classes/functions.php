@@ -76,7 +76,7 @@ class Unomoon_Form_Functions {
 		}
 
 		// phpcs:disable PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
-		$debug_backtrace = debug_backtrace();
+		$debug_backtrace = debug_backtrace(); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace -- Only runs when WP_DEBUG is on, to point at the deprecated call site.
 		// phpcs:enable
 
 		array_shift( $debug_backtrace );

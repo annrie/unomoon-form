@@ -3,7 +3,7 @@
  * Plugin Name: Unomoon Form
  * Plugin URI: https://cielos.phantomoon.com/unomoon-form/
  * Description: Shortcode-based contact form with a confirmation screen. A maintained fork of MW WP Form, tracking its security fixes and verified on WordPress 7.
- * Version: 5.1.6.2
+ * Version: 5.1.6.3
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: annrie
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'UNOMOON_FORM_VERSION', '5.1.6.2' );
+define( 'UNOMOON_FORM_VERSION', '5.1.6.3' );
 define( 'UNOMOON_FORM_PLUGIN_FILE', __FILE__ );
 define( 'UNOMOON_FORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'UNOMOON_FORM_PLUGIN_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
@@ -256,7 +256,7 @@ class Unomoon_Form {
 			Unomoon_Form_Directory::do_empty( Unomoon_Form_Directory::get(), true );
 			Unomoon_Form_Directory::remove( Unomoon_Form_Directory::get( false ) );
 		} catch ( \Exception $e ) {
-			error_log( $e->getMessage() );
+			error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report cleanup failures on uninstall to the PHP error log.
 		}
 
 		delete_option( Unomoon_Form_Config::NAME );
@@ -266,7 +266,7 @@ class Unomoon_Form {
 		try {
 			Unomoon_Form_Directory::do_empty( Unomoon_Form_Directory::get() );
 		} catch ( \Exception $e ) {
-			error_log( $e->getMessage() );
+			error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report temp directory cleanup failures to the PHP error log.
 		}
 	}
 }

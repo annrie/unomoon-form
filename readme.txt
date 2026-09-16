@@ -4,7 +4,7 @@ Tags: contact form, form, confirm, mail, shortcode
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 5.1.6.2
+Stable tag: 5.1.6.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,11 @@ Please use GitHub Issues: https://github.com/annrie/unomoon-form/issues
 == Changelog ==
 
 Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is the first fork release that has caught up with upstream 5.1.6; a fix of our own on top of it would be 5.1.6.2, and catching up with upstream 5.1.7 would be 5.1.7.1. Releases before this plugin was submitted to the directory were published on GitHub only, and used a `-uno.N` suffix (5.1.6-uno.1). The suffix was dropped because stable tags here may contain only numbers and periods.
+
+= 5.1.6.3 =
+* Resolved all Plugin Check warnings. Intentional `error_log()` calls (mail delivery and upload failures) and the transient-cached direct query are now annotated with the reason; template variables set by `_render()` are marked as method-local.
+* Replaced the no-op error handler around the session cookie with a `headers_sent()` guard, matching the CSRF cookie code.
+* Added a plugin icon for the WordPress.org directory.
 
 = 5.1.6.2 =
 * Renamed the plugin from "Uno WP Form" to "Unomoon Form" to comply with the WordPress.org naming rules. All identifiers moved to the `unomoon-form` / `unomoonform_*` namespace: shortcodes are now `[unomoonform_*]`, hooks `unomoonform_*`, the form post type `unomoon-form`. Sites migrating from Uno WP Form must run the migration script shipped in the GitHub repository (`tools/migrate-from-uno-wp-form.php`).

@@ -105,7 +105,7 @@ class Unomoon_Form_Deprecation_Notice_Controller {
 		$like_file  = '%' . $wpdb->esc_like( '[unomoonform_file' ) . '%';
 		$like_image = '%' . $wpdb->esc_like( '[unomoonform_image' ) . '%';
 
-		$candidates = $wpdb->get_results(
+		$candidates = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- LIKE on post_content has no WP_Query equivalent; the result is cached in a transient above.
 			$wpdb->prepare(
 				"SELECT ID, post_title, post_content FROM {$wpdb->posts}
 				 WHERE post_type = %s
