@@ -1,0 +1,27 @@
+# WordPress.org の trunk/ に含めないもの(10up/action-wordpress-plugin-deploy が参照)
+# scripts/package.sh の allowlist と同じ結果になるように保つこと:
+#   配布物 = unomoon-form.php readme.txt LICENSE classes/ css/ images/ js/ templates/
+
+# WordPress.org 用のスクリーンショット・バナー(SVN の assets/ へ別途コピーされる)
+/assets
+
+# 翻訳は translate.wordpress.org で管理
+/languages
+
+# 開発・保守用
+/README.md
+/scripts
+/tools
+/tasks
+/packaged
+
+# リポジトリ管理ファイル
+/.git
+/.github
+/.gitignore
+/.gitattributes
+/.distignore
+
+# OS・エディタ
+.DS_Store
+Thumbs.db

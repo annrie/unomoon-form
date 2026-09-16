@@ -1,0 +1,127 @@
+name: Deploy to WordPress.org
+
+# v<version> タグを push すると WordPress.org の SVN(trunk/ tags/<version>/ assets/)へ配信する。
+# 手動実行(workflow_dispatch)は常に dry-run: SVN へはコミットせず、trunk に入る中身を確認するため。
+#
+# 必要な Secrets: SVN_USERNAME / SVN_PASSWORD
+#   (WordPress.org プロフィール > Account & Security で生成した SVN パスワード)
+#   dry-run でも 10up のアクションが Secrets の存在を要求するので、先に登録しておくこと。
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to WordPress.org
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Resolve version and check consistency
+        id: version
+        run: |
+          set -euo pipefail
+
+          HEADER_VERSION=$(sed -n 's/^ \* Version: *//p' unomoon-form.php | head -1 | tr -d '\r')
+          STABLE_TAG=$(sed -n 's/^Stable tag: *//p' readme.txt | head -1 | tr -d '\r')
+
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            DRY_RUN=false
+          else
+            VERSION="${HEADER_VERSION}"
+            DRY_RUN=true
+          fi
+
+          echo "tag/requested: ${VERSION}"
+          echo "unomoon-form.php Version: ${HEADER_VERSION}"
+          echo "readme.txt Stable tag:    ${STABLE_TAG}"
+
+          if [ -z "${VERSION}" ] || [ -z "${HEADER_VERSION}" ] || [ -z "${STABLE_TAG}" ]; then
+            echo "::error::バージョンを特定できません" >&2
+            exit 1
+          fi
+          # WordPress.org の SVN タグ名は数字とピリオドのみ(5.1.6.2 など)
+          if ! printf '%s' "${VERSION}" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
+            echo "::error::バージョン(${VERSION})は数字とピリオドのみで構成してください" >&2
+            exit 1
+          fi
+          if [ "${VERSION}" != "${HEADER_VERSION}" ] || [ "${VERSION}" != "${STABLE_TAG}" ]; then
+            echo "::error::タグ(${VERSION}) / Version ヘッダ(${HEADER_VERSION}) / Stable tag(${STABLE_TAG}) が一致していません" >&2
+            exit 1
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "dry-run=${DRY_RUN}" >> "$GITHUB_OUTPUT"
+
+      # .distignore(denylist)が scripts/package.sh(allowlist)から乖離すると、
+      # 新しく増えたファイルが黙って SVN に載る。両者の結果が一致することをデプロイ前に確認する。
+      - name: Verify .distignore matches scripts/package.sh
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          WORK=$(mktemp -d)
+          # 10up/action-wordpress-plugin-deploy と同じ rsync の使い方で trunk 相当を作る
+          rsync -rc --exclude-from=.distignore ./ "${WORK}/distignore/" --delete --delete-excluded
+          bash scripts/package.sh >/dev/null
+          mkdir -p "${WORK}/package"
+          unzip -q "packaged/unomoon-form-${VERSION}.zip" -d "${WORK}/package"
+          if ! diff -r "${WORK}/distignore" "${WORK}/package/unomoon-form"; then
+            echo "::error::.distignore と scripts/package.sh の配布物が一致しません。両方を更新してください" >&2
+            exit 1
+          fi
+          echo "OK: .distignore と scripts/package.sh の配布物は一致しています"
+          rm -rf "${WORK}" packaged
+
+      - name: Deploy to WordPress.org SVN
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0
+        with:
+          generate-zip: true
+          dry-run: ${{ steps.version.outputs.dry-run }}
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: unomoon-form
+          VERSION: ${{ steps.version.outputs.version }}
+          ASSETS_DIR: assets
+
+      - name: Rename zip
+        env:
+          ZIP_PATH: ${{ steps.deploy.outputs.zip-path }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: mv "${ZIP_PATH}" "unomoon-form-${VERSION}.zip"
+
+      # dry-run でも trunk に入った中身を zip で確認できるようにする
+      - name: Upload zip as workflow artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: unomoon-form-${{ steps.version.outputs.version }}
+          path: unomoon-form-${{ steps.version.outputs.version }}.zip
+
+  # Release 作成に必要な contents: write はこのジョブだけに限定する
+  release:
+    name: Attach zip to GitHub Release
+    needs: deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: unomoon-form-${{ needs.deploy.outputs.version }}
+
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        with:
+          files: unomoon-form-${{ needs.deploy.outputs.version }}.zip
+          generate_release_notes: true

@@ -80,6 +80,24 @@ This plugin was named **Uno WP Form** until 5.1.6.1 and was renamed to comply wi
 3. `Unomoon Form` の管理メニューからフォームを作成または編集します。
 4. 生成されたショートコードを固定ページなどに配置します。
 
+## Releasing to WordPress.org / WordPress.org へのリリース
+
+Development happens on GitHub; the WordPress.org SVN repository is only a release target. Pushing a `v<version>` tag runs `.github/workflows/deploy-wordpress-org.yml`, which deploys `trunk/`, `tags/<version>/` and `assets/` via [10up/action-wordpress-plugin-deploy](https://github.com/10up/action-wordpress-plugin-deploy) and attaches the generated zip to a GitHub Release. Files listed in `.distignore` are excluded from `trunk/`; the workflow fails if `.distignore` and the `scripts/package.sh` allowlist produce different file sets.
+
+1. Bump `Version:` in `unomoon-form.php` and `Stable tag:` in `readme.txt` to the same value, update the changelog, and merge to `main`.
+2. `git tag v5.1.6.2 && git push origin v5.1.6.2` (the workflow fails if the tag, the `Version:` header and `Stable tag:` do not match).
+3. Optional: run the workflow manually from the Actions tab to perform a dry run (nothing is committed to SVN; the resulting zip is uploaded as a workflow artifact). The secrets below are required even for a dry run.
+
+Required repository secrets: `SVN_USERNAME` (WordPress.org username) and `SVN_PASSWORD` (generated under Account & Security on your WordPress.org profile).
+
+開発は GitHub で行い、WordPress.org の SVN はリリース先としてのみ使います。`v<version>` タグを push すると `.github/workflows/deploy-wordpress-org.yml` が動き、[10up/action-wordpress-plugin-deploy](https://github.com/10up/action-wordpress-plugin-deploy) で `trunk/`・`tags/<version>/`・`assets/` を配信し、生成された zip を GitHub Release に添付します。`.distignore` に列挙したファイルは `trunk/` から除外され、`.distignore` と `scripts/package.sh` の allowlist の結果が食い違うとワークフローは失敗します。
+
+1. `unomoon-form.php` の `Version:` と `readme.txt` の `Stable tag:` を同じ値に上げ、changelog を更新して `main` にマージします。
+2. `git tag v5.1.6.2 && git push origin v5.1.6.2` を実行します（タグ・`Version:` ヘッダ・`Stable tag:` が一致しないとワークフローは失敗します）。
+3. 任意: Actions タブからワークフローを手動実行すると dry run になります（SVN へはコミットせず、zip をワークフローの artifact として保存します）。dry run でも下記の Secrets は必要です。
+
+必要なリポジトリ Secrets: `SVN_USERNAME`（WordPress.org のユーザー名）と `SVN_PASSWORD`（WordPress.org プロフィールの Account & Security で生成）。
+
 ## Upstream / フォーク元
 
 This project is forked from MW WP Form:
