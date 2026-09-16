@@ -8,6 +8,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included from _render() after extract(); these variables are method-local, not global.
 ?>
 
 <input type="hidden" name="<?php echo esc_attr( Unomoon_Form_Config::NAME ); ?>_nonce" value="<?php echo esc_attr( wp_create_nonce( Unomoon_Form_Config::NAME ) ); ?>" />

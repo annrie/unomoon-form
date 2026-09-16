@@ -84,7 +84,7 @@ class Unomoon_Form_File {
 				throw new \RuntimeException( '[Unomoon Form] An error occurred during file upload.' );
 			}
 		} catch ( \Exception $e ) {
-			error_log( $e->getMessage() );
+			error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report upload failures to the PHP error log.
 			return false;
 		}
 
@@ -94,7 +94,7 @@ class Unomoon_Form_File {
 				throw new \RuntimeException( '[Unomoon Form] Creation of a temporary directory for file upload failed.' );
 			}
 		} catch ( \Exception $e ) {
-			error_log( $e->getMessage() );
+			error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report upload failures to the PHP error log.
 			return false;
 		}
 
@@ -104,7 +104,7 @@ class Unomoon_Form_File {
 		try {
 			$filepath = Unomoon_Form_Directory::generate_user_filepath( $form_id, $name, $filename );
 		} catch ( \Exception $e ) {
-			error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report upload failures to the PHP error log.
 			return false;
 		}
 		if ( ! $filepath ) {
@@ -132,14 +132,14 @@ class Unomoon_Form_File {
 
 		if ( ! is_array( $uploaded ) || isset( $uploaded['error'] ) ) {
 			$message = is_array( $uploaded ) && isset( $uploaded['error'] ) ? $uploaded['error'] : 'unknown error';
-			error_log( '[Unomoon Form] There was an error saving the uploaded file: ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[Unomoon Form] There was an error saving the uploaded file: ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report upload failures to the PHP error log.
 			return false;
 		}
 
 		if ( wp_normalize_path( $uploaded['file'] ) !== $filepath ) {
 			// wp_handle_upload() saved the file elsewhere; keep the temporary directory clean.
 			wp_delete_file( $uploaded['file'] );
-			error_log( '[Unomoon Form] The uploaded file was saved to an unexpected location.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[Unomoon Form] The uploaded file was saved to an unexpected location.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report upload failures to the PHP error log.
 			return false;
 		}
 

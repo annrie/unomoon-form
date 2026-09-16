@@ -174,7 +174,7 @@ class Unomoon_Form_Mail {
 	public function createBody( array $array, array $options = array() ) {
 		$_ret     = '';
 		$defaults = array(
-			'exclude' => array(),
+			'exclude' => array(), // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- Option of createBody(), not a query argument.
 		);
 		$options  = array_merge( $defaults, $options );
 		foreach ( $array as $key => $value ) {

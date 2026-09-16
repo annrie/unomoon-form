@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Unomoon Form">
+  <rect width="256" height="256" rx="52" fill="#b92a2c"/>
+  <g fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M72 52h72l34 34v118H72z"/>
+    <path d="M144 52v34h34"/>
+    <path d="M98 126h48"/>
+    <path d="M98 156h30"/>
+  </g>
+  <circle cx="178" cy="182" r="36" fill="#fff" stroke="#b92a2c" stroke-width="12"/>
+  <path d="M161 183l12 12 23-25" fill="none" stroke="#b92a2c" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

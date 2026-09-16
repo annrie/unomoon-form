@@ -616,7 +616,7 @@ class Unomoon_Form_Data {
 			try {
 				$filepath = Unomoon_Form_Directory::generate_user_filepath( $form_id, $upload_file_key, $upload_filename );
 			} catch ( \Exception $e ) {
-				error_log( $e->getMessage() );
+				error_log( $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Report attachment path failures to the PHP error log.
 				unset( $upload_file_keys[ $key ] );
 				$this->set( $upload_file_key, '' );
 				continue;

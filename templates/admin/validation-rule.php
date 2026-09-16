@@ -8,6 +8,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included from _render() after extract(); these variables are method-local, not global.
 ?>
 
 <b class="add-btn"><?php esc_html_e( 'Add Validation rule', 'unomoon-form' ); ?></b>

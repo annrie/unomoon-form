@@ -51,8 +51,8 @@ class Unomoon_Form_Session {
 		if ( null === $session_id ) {
 			$session_id = sha1( wp_create_nonce( $this->name ) . ip2long( $this->get_remote_addr() ) . uniqid() );
 			$secure     = apply_filters( 'unomoonform_secure_cookie', is_ssl() );
-			try {
-				set_error_handler( array( 'Unomoon_Form_Session', 'error_handler' ) );
+			// setcookie() only warns when headers are already sent, so guard instead of swallowing the warning (same as Unomoon_Form_CSRF::save_token()).
+			if ( ! headers_sent() ) {
 				setcookie(
 					$this->name,
 					$session_id,
@@ -65,10 +65,6 @@ class Unomoon_Form_Session {
 						'samesite' => 'Lax',
 					)
 				);
-			} catch ( ErrorException $e ) {
-				// No process...
-			} finally {
-				restore_error_handler();
 			}
 		}
 
@@ -103,24 +99,6 @@ class Unomoon_Form_Session {
 	 */
 	protected function _transient_key() {
 		return self::TRANSIENT_PREFIX . $this->session_id;
-	}
-
-	/**
-	 * Error handler.
-	 *
-	 * @param int    $errno   Contains the level of the error raised.
-	 * @param string $errstr  Contains the error message.
-	 * @param string $errfile Which contains the filename that the error was raised in.
-	 * @param int    $errline Which contains the line number the error was raised at.
-	 */
-	public static function error_handler(
-		// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-		$errno,
-		$errstr,
-		$errfile,
-		$errline
-		// phpcs:disable
-	) {
 	}
 
 	/**
