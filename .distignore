@@ -16,6 +16,7 @@
 /packaged
 
 # リポジトリ管理ファイル
+/.codex
 /.git
 /.github
 /.gitignore
