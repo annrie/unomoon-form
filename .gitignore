@@ -1,3 +1,6 @@
 .DS_Store
 packaged/
 Thumbs.db
+
+# Codex アプリがローカルで生成する設定(配布物に混ぜない)
+.codex/
