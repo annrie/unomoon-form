@@ -178,7 +178,24 @@ class Unomoon_Form_Parser {
 			return;
 		}
 
-		return $this->_get_post_property( $post, $matches[1] );
+		/**
+		 * Filters the meta keys that may be substituted from the post given by the post_id query string.
+		 * None by default: any visitor can choose the post, so only the keys allowed here are read.
+		 * Post properties such as post_title are not affected.
+		 *
+		 * @param string[] $meta_keys Allowed meta keys.
+		 * @param WP_Post  $post      Post looked up by post_id.
+		 * @param string   $form_key  Form key.
+		 */
+		$allowed_meta_keys = apply_filters( 'unomoonform_querystring_allowed_meta_keys', array(), $post, $this->form_key );
+		if ( $this->form_key ) {
+			$allowed_meta_keys = apply_filters( 'unomoonform_querystring_allowed_meta_keys_' . $this->form_key, $allowed_meta_keys, $post );
+		}
+
+		// Only string values count; a map such as array( 'key' => true ) or nested arrays would otherwise become wrong keys.
+		$allowed_meta_keys = array_values( array_filter( (array) $allowed_meta_keys, 'is_string' ) );
+
+		return $this->_get_post_property( $post, $matches[1], $allowed_meta_keys );
 	}
 
 	/**
@@ -204,11 +221,12 @@ class Unomoon_Form_Parser {
 	/**
 	 * Get WP_Post property.
 	 *
-	 * @param WP_Post|null $post     WP_Post object.
-	 * @param string       $meta_key Meta data name.
+	 * @param WP_Post|null  $post              WP_Post object.
+	 * @param string        $meta_key          Meta data name.
+	 * @param string[]|null $allowed_meta_keys Meta keys that may be read. Null allows any non-private meta.
 	 * @return string|null
 	 */
-	protected function _get_post_property( $post, $meta_key ) {
+	protected function _get_post_property( $post, $meta_key, $allowed_meta_keys = null ) {
 		if ( ! is_a( $post, 'WP_Post' ) ) {
 			return;
 		}
@@ -237,6 +255,17 @@ class Unomoon_Form_Parser {
 
 		// Private meta (leading underscore) is never exposed.
 		if ( '' === $meta_key || '_' === substr( $meta_key, 0, 1 ) ) {
+			if ( is_array( $allowed_meta_keys ) && in_array( $meta_key, $allowed_meta_keys, true ) ) {
+				$this->_notice_skipped_meta_key( $meta_key, 'Meta keys that start with an underscore are never substituted, even when allowed.' );
+			}
+			return;
+		}
+
+		if ( is_array( $allowed_meta_keys ) && ! in_array( $meta_key, $allowed_meta_keys, true ) ) {
+			// Tell developers only when the post really has this meta, so ordinary placeholders stay quiet.
+			if ( metadata_exists( 'post', $post->ID, $meta_key ) ) {
+				$this->_notice_skipped_meta_key( $meta_key, 'Allow it with the unomoonform_querystring_allowed_meta_keys filter.' );
+			}
 			return;
 		}
 
@@ -246,6 +275,33 @@ class Unomoon_Form_Parser {
 		}
 
 		return esc_html( (string) $post_meta );
+	}
+
+	/**
+	 * Report, once per meta key, that a placeholder was left empty under the querystring setting.
+	 * _doing_it_wrong() only shows anything when WP_DEBUG is enabled.
+	 *
+	 * @param string $meta_key Meta key that was not substituted.
+	 * @param string $reason   What to do about it.
+	 */
+	protected function _notice_skipped_meta_key( $meta_key, $reason ) {
+		static $noticed = array();
+		if ( isset( $noticed[ $meta_key ] ) ) {
+			return;
+		}
+		$noticed[ $meta_key ] = true;
+
+		_doing_it_wrong(
+			__METHOD__,
+			esc_html(
+				sprintf(
+					'The placeholder {%1$s} was left empty because the querystring setting does not substitute post meta unless it is allowed. %2$s',
+					$meta_key,
+					$reason
+				)
+			),
+			'5.1.8.2'
+		);
 	}
 
 	/**
