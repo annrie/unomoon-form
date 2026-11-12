@@ -168,7 +168,13 @@ class Unomoon_Form_Parser {
 			return;
 		}
 
-		if ( 'publish' !== $post->post_status || post_password_required( $post ) ) {
+		// Checks both the post type and the status: inquiry data is stored as "publish" under a non-public post type.
+		// Inquiry data is also rejected by name, because other code can filter is_post_publicly_viewable().
+		if (
+			Unomoon_Form_Functions::is_contact_data_post_type( $post->post_type )
+			|| ! is_post_publicly_viewable( $post )
+			|| post_password_required( $post )
+		) {
 			return;
 		}
 

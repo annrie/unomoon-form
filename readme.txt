@@ -4,7 +4,7 @@ Tags: contact form, form, confirm, mail, shortcode
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 5.1.6.3
+Stable tag: 5.1.8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,10 @@ Please use GitHub Issues: https://github.com/annrie/unomoon-form/issues
 
 Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is the first fork release that has caught up with upstream 5.1.6; a fix of our own on top of it would be 5.1.6.2, and catching up with upstream 5.1.7 would be 5.1.7.1. Releases before this plugin was submitted to the directory were published on GitHub only, and used a `-uno.N` suffix (5.1.6-uno.1). The suffix was dropped because stable tags here may contain only numbers and periods.
 
+= 5.1.8.1 =
+* Security: Tighten access control when a form looks up a post through the `post_id` query string (the "querystring" setting). The check now requires the post to be publicly viewable, not merely in the "publish" status. Inquiry data is saved as "publish" under a non-public post type, so a form containing placeholders such as `{email}` could display another visitor's submitted values. Inquiry data post types are also rejected by name, so a filter that makes them viewable cannot reopen this. Ported from upstream 5.1.7 (re-released upstream as 5.1.8 without code changes).
+* Behavior change: published posts of post types that are not publicly queryable (for example a custom post type registered with `public => false`) are no longer substituted through `post_id`. Placeholders for them now stay empty.
+
 = 5.1.6.3 =
 * Resolved all Plugin Check warnings. Intentional `error_log()` calls (mail delivery and upload failures) and the transient-cached direct query are now annotated with the reason; template variables set by `_render()` are marked as method-local.
 * Replaced the no-op error handler around the session cookie with a `headers_sent()` guard, matching the CSRF cookie code.
@@ -144,6 +148,9 @@ Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is 
 * Migrated identifiers, post types, shortcode prefixes, hooks, assets and admin labels to the `uno-wp-form` / `unoform_*` namespace (renamed again to `unomoon-form` / `unomoonform_*` in 5.1.6.2).
 
 == Upgrade Notice ==
+
+= 5.1.8.1 =
+Security release. If a form has the "querystring" setting enabled, its placeholders could display submitted inquiry data looked up by `post_id`. Updating is recommended. Posts of non-public post types are no longer substituted through `post_id`.
 
 = 5.1.6.2 =
 The plugin was renamed to Unomoon Form and every identifier changed. If you are upgrading from Uno WP Form, back up your database and run the migration script from the GitHub repository before activating this version. Also a security hardening release.

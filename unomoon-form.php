@@ -3,7 +3,7 @@
  * Plugin Name: Unomoon Form
  * Plugin URI: https://cielos.phantomoon.com/unomoon-form/
  * Description: Shortcode-based contact form with a confirmation screen. A maintained fork of MW WP Form, tracking its security fixes and verified on WordPress 7.
- * Version: 5.1.6.3
+ * Version: 5.1.8.1
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: annrie
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'UNOMOON_FORM_VERSION', '5.1.6.3' );
+define( 'UNOMOON_FORM_VERSION', '5.1.8.1' );
 define( 'UNOMOON_FORM_PLUGIN_FILE', __FILE__ );
 define( 'UNOMOON_FORM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'UNOMOON_FORM_PLUGIN_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
