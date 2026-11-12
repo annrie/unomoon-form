@@ -21,14 +21,6 @@
   <a href="https://github.com/annrie/unomoon-form/releases/latest">
     <img src="https://img.shields.io/github/v/release/annrie/unomoon-form.svg" alt="Latest release">
   </a>
-  <!-- Downloads total -->
-  <a href="https://github.com/annrie/unomoon-form/releases">
-    <img src="https://img.shields.io/github/downloads/annrie/unomoon-form/total.svg" alt="Total downloads">
-  </a>
-  <!-- Downloads latest release -->
-  <a href="https://github.com/annrie/unomoon-form/releases/latest">
-    <img src="https://img.shields.io/github/downloads/annrie/unomoon-form/latest/total.svg" alt="Latest release downloads">
-  </a>
   <!-- Stars -->
   <a href="https://github.com/annrie/unomoon-form/stargazers">
     <img src="https://img.shields.io/github/stars/annrie/unomoon-form.svg" alt="Stars">
