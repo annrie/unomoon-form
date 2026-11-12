@@ -178,7 +178,19 @@ class Unomoon_Form_Parser {
 			return;
 		}
 
-		return $this->_get_post_property( $post, $matches[1] );
+		/**
+		 * Filters the meta keys that may be substituted from the post given by the post_id query string.
+		 * None by default: any visitor can choose the post, so only the keys allowed here are read.
+		 * Post properties such as post_title are not affected.
+		 *
+		 * @param string[] $meta_keys Allowed meta keys.
+		 * @param WP_Post  $post      Post looked up by post_id.
+		 * @param string   $form_key  Form key.
+		 */
+		$allowed_meta_keys = apply_filters( 'unomoonform_querystring_allowed_meta_keys', array(), $post, $this->form_key );
+		$allowed_meta_keys = apply_filters( 'unomoonform_querystring_allowed_meta_keys_' . $this->form_key, $allowed_meta_keys, $post );
+
+		return $this->_get_post_property( $post, $matches[1], array_map( 'strval', (array) $allowed_meta_keys ) );
 	}
 
 	/**
@@ -204,11 +216,12 @@ class Unomoon_Form_Parser {
 	/**
 	 * Get WP_Post property.
 	 *
-	 * @param WP_Post|null $post     WP_Post object.
-	 * @param string       $meta_key Meta data name.
+	 * @param WP_Post|null  $post              WP_Post object.
+	 * @param string        $meta_key          Meta data name.
+	 * @param string[]|null $allowed_meta_keys Meta keys that may be read. Null allows any non-private meta.
 	 * @return string|null
 	 */
-	protected function _get_post_property( $post, $meta_key ) {
+	protected function _get_post_property( $post, $meta_key, $allowed_meta_keys = null ) {
 		if ( ! is_a( $post, 'WP_Post' ) ) {
 			return;
 		}
@@ -237,6 +250,10 @@ class Unomoon_Form_Parser {
 
 		// Private meta (leading underscore) is never exposed.
 		if ( '' === $meta_key || '_' === substr( $meta_key, 0, 1 ) ) {
+			return;
+		}
+
+		if ( is_array( $allowed_meta_keys ) && ! in_array( $meta_key, $allowed_meta_keys, true ) ) {
 			return;
 		}
 

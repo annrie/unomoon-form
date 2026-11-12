@@ -4,7 +4,7 @@ Tags: contact form, form, confirm, mail, shortcode
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 5.1.8.1
+Stable tag: 5.1.8.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,18 @@ Note that unrecognised attributes are silently ignored, and the Japanese default
 
 送信ボタンは `[unomoonform_submitButton confirm_value="..." submit_value="..."]` です。1つのタグが入力画面と確認画面の両方を兼ねます。**指定されていない属性は黙って無視される**ため、属性名を間違えても既定のラベルで正しく動いているように見えることがあります。
 
+= How do I show custom fields with the "querystring" setting? =
+
+With the setting enabled, `?post_id=123` fills placeholders such as `{post_title}` from post 123. Since 5.1.8.2, custom fields (post meta) are not filled from that post unless you allow their keys, because any visitor can choose the post ID. Allow them with a filter, for all forms or for one form:
+
+`add_filter( 'unomoonform_querystring_allowed_meta_keys', fn () => array( 'event_date', 'venue' ) );`
+
+`add_filter( 'unomoonform_querystring_allowed_meta_keys_unomoon-form-123', fn () => array( 'event_date' ) );`
+
+Keys starting with an underscore and inquiry data are never shown. Without the setting, a form still shows the custom fields of the page it is placed on.
+
+URL 引数を有効にしたフォームで、`?post_id=` で指定した投稿のカスタムフィールドを差し込むには、上のフィルターでキーを許可してください（5.1.8.2 から既定では差し込みません）。
+
 = Where should I report issues? =
 
 Please use GitHub Issues: https://github.com/annrie/unomoon-form/issues
@@ -115,6 +127,9 @@ Please use GitHub Issues: https://github.com/annrie/unomoon-form/issues
 == Changelog ==
 
 Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is the first fork release that has caught up with upstream 5.1.6; a fix of our own on top of it would be 5.1.6.2, and catching up with upstream 5.1.7 would be 5.1.7.1. Releases before this plugin was submitted to the directory were published on GitHub only, and used a `-uno.N` suffix (5.1.6-uno.1). The suffix was dropped because stable tags here may contain only numbers and periods.
+
+= 5.1.8.2 =
+* Security: With the "querystring" setting, custom fields (post meta) are no longer filled from the post given by `post_id` unless their keys are allowed with the new `unomoonform_querystring_allowed_meta_keys` filter (or `unomoonform_querystring_allowed_meta_keys_<form key>` for one form). Any visitor can choose the post ID, so a form placeholder such as `{email}` could read that meta key from any public post, including values stored by other plugins. Post properties such as `{post_title}` are not affected, and neither are forms without the setting, which still read the page they are placed on.
 
 = 5.1.8.1 =
 * Security: Tighten access control when a form looks up a post through the `post_id` query string (the "querystring" setting). The check now requires the post to be publicly viewable, not merely in the "publish" status. Inquiry data is saved as "publish" under a non-public post type, so a form containing placeholders such as `{email}` could display another visitor's submitted values. Inquiry data post types are also rejected by name, so a filter that makes them viewable cannot reopen this. Ported from upstream 5.1.7 (re-released upstream as 5.1.8 without code changes).
@@ -148,6 +163,9 @@ Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is 
 * Migrated identifiers, post types, shortcode prefixes, hooks, assets and admin labels to the `uno-wp-form` / `unoform_*` namespace (renamed again to `unomoon-form` / `unomoonform_*` in 5.1.6.2).
 
 == Upgrade Notice ==
+
+= 5.1.8.2 =
+Security hardening. Forms with the "querystring" setting no longer fill custom fields from the post given by `post_id` unless the keys are allowed with the `unomoonform_querystring_allowed_meta_keys` filter. See the FAQ.
 
 = 5.1.8.1 =
 Security release. If a form has the "querystring" setting enabled, its placeholders could display submitted inquiry data looked up by `post_id`. Updating is recommended. Posts of non-public post types are no longer substituted through `post_id`.
