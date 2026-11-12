@@ -130,9 +130,12 @@ Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is 
 
 = 5.1.8.2 =
 * Security: With the "querystring" setting, custom fields (post meta) are no longer filled from the post given by `post_id` unless their keys are allowed with the new `unomoonform_querystring_allowed_meta_keys` filter (or `unomoonform_querystring_allowed_meta_keys_<form key>` for one form). Any visitor can choose the post ID, so a form placeholder such as `{email}` could read that meta key from any public post, including values stored by other plugins. Post properties such as `{post_title}` are not affected, and neither are forms without the setting, which still read the page they are placed on.
+* With `WP_DEBUG` enabled, a notice reports a placeholder left empty for this reason.
+* セキュリティ: 「URL 引数」がオンのフォームでは、`post_id` で指定した投稿のカスタムフィールドを、`unomoonform_querystring_allowed_meta_keys` フィルターで許可したキーだけ差し込むようにしました。投稿 ID は訪問者が選べるので、`{email}` などの記号から、ほかのプラグインが公開投稿に保存したメタまで読めました。`{post_title}` などの投稿の項目と、URL 引数がオフのフォームは今までどおりです。
 
 = 5.1.8.1 =
 * Security: Tighten access control when a form looks up a post through the `post_id` query string (the "querystring" setting). The check now requires the post to be publicly viewable, not merely in the "publish" status. Inquiry data is saved as "publish" under a non-public post type, so a form containing placeholders such as `{email}` could display another visitor's submitted values. Inquiry data post types are also rejected by name, so a filter that makes them viewable cannot reopen this. Ported from upstream 5.1.7 (re-released upstream as 5.1.8 without code changes).
+* セキュリティ: 「URL 引数」で `post_id` の投稿を参照するとき、公開状態だけでなく、投稿タイプも公開かどうかを確かめるようにしました。問い合わせデータは非公開の投稿タイプに「公開」の状態で保存されるため、他人が送った内容を表示できました。上流 5.1.7 の修正の移植です。
 * Behavior change: published posts of post types that are not publicly queryable (for example a custom post type registered with `public => false`) are no longer substituted through `post_id`. Placeholders for them now stay empty.
 
 = 5.1.6.3 =
