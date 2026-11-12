@@ -168,7 +168,8 @@ class Unomoon_Form_Parser {
 			return;
 		}
 
-		if ( 'publish' !== $post->post_status || post_password_required( $post ) ) {
+		// Checks both the post type and the status: inquiry data is stored as "publish" under a non-public post type.
+		if ( ! is_post_publicly_viewable( $post ) || post_password_required( $post ) ) {
 			return;
 		}
 
