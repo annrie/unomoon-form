@@ -1,0 +1,46 @@
+name: Upstream check
+
+# 上流 MW WP Form に新しい版が出ていないかを週 1 回確かめ、出ていれば Issue を立てる。
+# 上流はタグを打つだけで GitHub Release を作らないので、Watch → Releases では通知が来ない。
+# 判定は .github/scripts/upstream-check.sh(手元でも DRY_RUN=1 で試せる)。
+#
+# 保守者向け:
+#   - 定期実行は既定ブランチ(main)のこのファイルで動く。手動実行(workflow_dispatch)も main に無いとできない
+#   - 公開リポジトリでは、60 日間リポジトリに動きが無いと定期実行が自動で止まる。
+#     止まったら Actions の画面か `gh workflow enable upstream-check.yml` で戻す
+#   - 上流の版を取れなかったときはジョブを失敗させる(黙って「新しい版なし」にしない)。
+#     定期実行の失敗は、cron の行を最後に変えた人にメールで届く
+
+on:
+  schedule:
+    # 毎週月曜 09:17(日本時間)。毎時 0 分は混むので避ける
+    - cron: "17 0 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: upstream-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check upstream MW WP Form
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # cone モードを切ると gitignore と同じ書き方になるので、先頭の / で直下に限る
+          sparse-checkout: |
+            /readme.txt
+            /.github/scripts/
+          sparse-checkout-cone-mode: false
+
+      - name: Compare with upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: .github/scripts/upstream-check.sh
