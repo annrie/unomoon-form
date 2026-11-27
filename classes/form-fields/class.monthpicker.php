@@ -70,7 +70,7 @@ class Unomoon_Form_Field_Monthpicker extends Unomoon_Form_Abstract_Form_Field {
 
 		wp_enqueue_script(
 			'jquery-ui-monthpicker',
-			UNOMOON_FORM_PLUGIN_URL . '/js/jquery-ui-month-picker/MonthPicker.min.js',
+			UNOMOON_FORM_PLUGIN_URL . '/js/jquery-ui-month-picker/MonthPicker.js',
 			array( 'jquery', 'jquery-ui-button', 'jquery-ui-datepicker' ),
 			UNOMOON_FORM_VERSION,
 			true
@@ -79,6 +79,7 @@ class Unomoon_Form_Field_Monthpicker extends Unomoon_Form_Abstract_Form_Field {
 		$Json_Parser      = new Unomoon_Form_Json_Parser( $this->atts['js'] );
 		$this->atts['js'] = $Json_Parser->create_json();
 		$js               = json_decode( $this->atts['js'], true );
+		$js               = is_array( $js ) ? $this->_strip_tags_deep( $js ) : array();
 
 		$js = array_merge(
 			$js,
@@ -197,5 +198,26 @@ class Unomoon_Form_Field_Monthpicker extends Unomoon_Form_Abstract_Form_Field {
 			<label><input type="checkbox" name="show_error" value="false" <?php checked( 'false', $show_error ); ?> /> <?php esc_html_e( 'Don\'t display error.', 'unomoon-form' ); ?></label>
 		</p>
 		<?php
+	}
+
+	/**
+	 * Strip HTML tags from every string in the MonthPicker options.
+	 *
+	 * The options come from the shortcode's js attribute, which anyone who can edit
+	 * forms can set, including users without unfiltered_html. MonthPicker and jQuery UI
+	 * render some of them (button labels, month names) as HTML, so no option may carry markup.
+	 *
+	 * @param array $options MonthPicker options.
+	 * @return array
+	 */
+	protected function _strip_tags_deep( array $options ) {
+		foreach ( $options as $key => $value ) {
+			if ( is_array( $value ) ) {
+				$options[ $key ] = $this->_strip_tags_deep( $value );
+			} elseif ( is_string( $value ) ) {
+				$options[ $key ] = wp_strip_all_tags( $value );
+			}
+		}
+		return $options;
 	}
 }
