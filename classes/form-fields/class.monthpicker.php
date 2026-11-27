@@ -70,7 +70,7 @@ class Unomoon_Form_Field_Monthpicker extends Unomoon_Form_Abstract_Form_Field {
 
 		wp_enqueue_script(
 			'jquery-ui-monthpicker',
-			UNOMOON_FORM_PLUGIN_URL . '/js/jquery-ui-month-picker/MonthPicker.min.js',
+			UNOMOON_FORM_PLUGIN_URL . '/js/jquery-ui-month-picker/MonthPicker.js',
 			array( 'jquery', 'jquery-ui-button', 'jquery-ui-datepicker' ),
 			UNOMOON_FORM_VERSION,
 			true
