@@ -1,6 +1,6 @@
 jQuery( function( $ ) {
 
-	$( '.unomoon_form input[data-conv-half-alphanumeric="true"]' ).change( function() {
+	$( '.unomoon_form input[data-conv-half-alphanumeric="true"]' ).on( 'change', function() {
 		var txt  = $( this ).val();
 		var half = txt.replace( /[Ａ-Ｚａ-ｚ０-９]/g, function( s ) {
 			return String.fromCharCode( s.charCodeAt( 0 ) - 0xFEE0 )
@@ -15,7 +15,7 @@ jQuery( function( $ ) {
 		if ( hidden_field.val() ) {
 			$( e ).css( 'visibility', 'visible' );
 		}
-		$( e ).click( function() {
+		$( e ).on( 'click', function() {
 			var file_field = $( 'input[type="file"][name="' + target + '"]' );
 			var new_field = $( file_field[0].outerHTML );
 			$( this ).css( 'visibility', 'hidden' );
@@ -32,7 +32,7 @@ jQuery( function( $ ) {
 	} );
 
 	var unomoon_form_button_no_click = true;
-	$( '.unomoon_form input[type="submit"]' ).click( function() {
+	$( '.unomoon_form input[type="submit"]' ).on( 'click', function() {
 		var formElement = $( this ).closest( 'form' )[0];
 		if ( formElement && formElement.checkValidity && !formElement.checkValidity() ) {
 			return;
