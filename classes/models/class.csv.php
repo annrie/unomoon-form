@@ -86,7 +86,7 @@ class Unomoon_Form_CSV {
 		// エンコード
 		foreach ( $rows as $row ) {
 			foreach ( $row as $column_name => $column ) {
-				$row[ $column_name ] = $this->_escape_double_quote( $column );
+				$row[ $column_name ] = $this->_escape_double_quote( $this->_escape_leading_character( $column ) );
 			}
 			$csv .= implode( ',', $row ) . "\r\n";
 		}
@@ -221,6 +221,21 @@ class Unomoon_Form_CSV {
 		}
 		wp_reset_postdata();
 		return $rows;
+	}
+
+	/**
+	 * Prefix a single quote to values starting with a character that spreadsheet
+	 * apps treat as the start of a formula (CSV injection).
+	 *
+	 * @param mixed $value Value.
+	 * @return string
+	 */
+	protected function _escape_leading_character( $value ) {
+		$value = (string) $value;
+		if ( '' !== $value && false !== strpos( "=+-@\t\r\n", $value[0] ) ) {
+			$value = "'" . $value;
+		}
+		return $value;
 	}
 
 	/**

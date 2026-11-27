@@ -38,7 +38,7 @@ jQuery( function( $ ) {
 			/**
 			 * 追加ボタン
 			 */
-			$( e ).find( config.add_btn ).click( function() {
+			$( e ).find( config.add_btn ).on( 'click', function() {
 				cnt ++;
 				var clone = $( this ).parent().find( config.box ).first().clone( true );
 				clone.find( 'input, select' ).each( function() {

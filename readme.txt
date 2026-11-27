@@ -2,9 +2,9 @@
 Contributors: annrie
 Tags: contact form, form, confirm, mail, shortcode
 Requires at least: 6.0
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 8.0
-Stable tag: 5.1.8.2
+Stable tag: 5.1.9.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,7 @@ Unomoon Form は、ショートコードで確認画面付きのメールフォ�
 
 = Why this fork exists =
 
-The upstream project states on its official site that **development is halted except for vulnerability fixes**, that it **will not re-verify the plugin each time WordPress is updated**, and that users should consider migrating to another plugin. As of this writing, upstream is still marked "tested up to 6.4" while WordPress 7.1 has shipped.
+The upstream project states on its official site that **development is halted except for vulnerability fixes**, that it **will not re-verify the plugin each time WordPress is updated**, and that users should consider migrating to another plugin. As of this writing, upstream is still marked "tested up to 6.4" while WordPress 7.2 has shipped.
 
 This fork exists to do the two things upstream has stopped doing:
 
@@ -128,6 +128,16 @@ Please use GitHub Issues: https://github.com/annrie/unomoon-form/issues
 
 Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is the first fork release that has caught up with upstream 5.1.6; a fix of our own on top of it would be 5.1.6.2, and catching up with upstream 5.1.7 would be 5.1.7.1. Releases before this plugin was submitted to the directory were published on GitHub only, and used a `-uno.N` suffix (5.1.6-uno.1). The suffix was dropped because stable tags here may contain only numbers and periods.
 
+= 5.1.9.1 =
+* Security: The inquiry data CSV export now prefixes a single quote to values that start with `=`, `+`, `-`, `@`, a tab or a line break. Spreadsheet apps such as Excel treat these as formulas, so a visitor could make a submitted value run as a formula when the CSV was opened (CSV injection). These values now show the leading quote in the file, including negative numbers such as `-1` and international phone numbers such as `+81-90-0000-0000`. If another system imports the CSV, check how it handles the quote. Ported from upstream 5.1.9.
+* Upstream 5.1.9 also hardened the session cookie check. This fork has validated the cookie format and used a prefixed transient key since 5.1.6.2, so no change was needed.
+* In the plugin's own scripts, replaced deprecated jQuery shorthand (`.click( fn )`, `.change( fn )` and the `:first` selector) with `.on()` and `.first()`, and toggled the tracking number field with `.prop( 'disabled' )` instead of `.removeAttr( 'disabled' )`, ahead of jQuery 4. WordPress 7.2 ships jQuery Migrate 3.6.0, which reports them in the console. The bundled MonthPicker library (used by the month picker field) is unchanged and still relies on APIs removed in jQuery 4.
+* Tested on WordPress 7.2.
+* セキュリティ: 問い合わせデータの CSV 出力で、先頭が `=`・`+`・`-`・`@`・タブ・改行の値の前に `'` を付けるようにしました。Excel などはこれらを数式として扱うため、送信された値が CSV を開いたときに数式として動くおそれがありました（CSV インジェクション）。`-1` のような負の数や、`+81-90-0000-0000` のような国際電話番号も、ファイル上では先頭に `'` が付きます。CSV をほかのシステムに取り込んでいる場合は、`'` の扱いを確かめてください。上流 5.1.9 の修正の移植です。
+* 上流 5.1.9 のもう 1 つの修正（セッションの Cookie の検証）は、このフォークでは 5.1.6.2 から入っているため、変更はありません。
+* jQuery 4 に備えて、このプラグイン自身の JS にある非推奨の書き方（`.click( fn )`・`.change( fn )`・`:first`）を `.on()` と `.first()` に置き換えました。問い合わせ番号の入力欄の有効・無効も、`.removeAttr( 'disabled' )` ではなく `.prop( 'disabled' )` で切り替えます。同梱の MonthPicker（月選択フィールド）は手を入れておらず、jQuery 4 で削除される API をまだ使っています。
+* WordPress 7.2 で動作を確認しました。
+
 = 5.1.8.2 =
 * Security: With the "querystring" setting, custom fields (post meta) are no longer filled from the post given by `post_id` unless their keys are allowed with the new `unomoonform_querystring_allowed_meta_keys` filter (or `unomoonform_querystring_allowed_meta_keys_<form key>` for one form). Any visitor can choose the post ID, so a form placeholder such as `{email}` could read that meta key from any public post, including values stored by other plugins. Post properties such as `{post_title}` are not affected, and neither are forms without the setting, which still read the page they are placed on.
 * With `WP_DEBUG` enabled, a notice reports a placeholder left empty for this reason.
@@ -166,6 +176,9 @@ Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is 
 * Migrated identifiers, post types, shortcode prefixes, hooks, assets and admin labels to the `uno-wp-form` / `unoform_*` namespace (renamed again to `unomoon-form` / `unomoonform_*` in 5.1.6.2).
 
 == Upgrade Notice ==
+
+= 5.1.9.1 =
+Security hardening of the inquiry data CSV export (CSV injection), ported from upstream 5.1.9. Values starting with `=`, `+`, `-`, `@`, a tab or a line break now get a leading single quote in the CSV, including negative numbers and international phone numbers such as `+81-90-0000-0000`. Tested on WordPress 7.2.
 
 = 5.1.8.2 =
 Security hardening. Forms with the "querystring" setting no longer fill custom fields from the post given by `post_id` unless the keys are allowed with the `unomoonform_querystring_allowed_meta_keys` filter. See the FAQ.

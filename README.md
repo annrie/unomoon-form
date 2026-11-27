@@ -35,7 +35,7 @@
 
 ## English
 
-Unomoon Form is a fork of MW WP Form, tested up to WordPress 7.1.
+Unomoon Form is a fork of MW WP Form, tested up to WordPress 7.2.
 
 MW WP Form development has stopped, so this fork migrates the plugin to the `unomoon-form` namespace and keeps the shortcode-based form workflow available for current WordPress environments.
 
@@ -75,7 +75,7 @@ This plugin was named **Uno WP Form** until 5.1.6.1 and was renamed to comply wi
 ### Requirements
 
 - WordPress 6.0 or later
-- Tested up to WordPress 7.1
+- Tested up to WordPress 7.2
 - PHP 8.0 or later
 
 ### Installation
@@ -122,7 +122,7 @@ GPLv2 or later.
 
 ## 日本語
 
-Unomoon Form は、MW WP Form の開発停止を受けてフォークした、WordPress 7.1 検証済みのフォームプラグインです。
+Unomoon Form は、MW WP Form の開発停止を受けてフォークした、WordPress 7.2 検証済みのフォームプラグインです。
 
 MW WP Form の開発が停止したため、このフォークではプラグインを `unomoon-form` 名前空間へ移行し、ショートコードベースのフォーム作成ワークフローを現在の WordPress 環境で利用できるようにしています。
 
@@ -162,7 +162,7 @@ MW WP Form の開発が停止したため、このフォークではプラグイ
 ### 動作要件
 
 - WordPress 6.0 以上
-- WordPress 7.1 検証済み
+- WordPress 7.2 検証済み
 - PHP 8.0 以上
 
 ### インストール

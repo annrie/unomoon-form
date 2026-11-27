@@ -17,7 +17,7 @@ jQuery( function( $ ) {
 		var shortcode_name  = dialog_id.replace( 'dialog-', '' );
 		var element_content = null;
 
-		$( '#' + dialog_id + ':first' ).find( 'input, textarea, select' ).each( function( i, e ) {
+		$( '#' + dialog_id ).first().find( 'input, textarea, select' ).each( function( i, e ) {
 			var val;
 			var name = $( e ).attr( 'name' );
 
@@ -82,7 +82,7 @@ jQuery( function( $ ) {
 		}
 	} );
 
-	$( '.add-unomoonform-btn .button' ).click( function() {
+	$( '.add-unomoonform-btn .button' ).on( 'click', function() {
 		var select = $( '.add-unomoonform-btn select' ).val();
 		$( '#dialog-' + select ).dialog( 'open' );
 	} );
@@ -98,13 +98,9 @@ jQuery( function( $ ) {
 	/**
 	 * 問い合わせ番号フィールド
 	 */
-	$( 'input[name="open_tracking_number_field"]' ).click( function() {
+	$( 'input[name="open_tracking_number_field"]' ).on( 'click', function() {
 		var tracking_number_field = $( '#tracking_number_field' );
 		var is_open = $( this ).prop( 'checked' );
-		if ( is_open ) {
-			tracking_number_field.removeAttr( 'disabled' );
-		} else {
-			tracking_number_field.attr( 'disabled', 'disabled' );
-		}
+		tracking_number_field.prop( 'disabled', ! is_open );
 	} );
 } );
