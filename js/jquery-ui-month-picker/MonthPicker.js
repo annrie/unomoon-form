@@ -6,6 +6,9 @@ Modified for Unomoon Form (2026-11): replaced jQuery APIs that jQuery 4
 removed or deprecated ($.isNumeric, $.trim, $.isFunction, $.proxy, and the
 .click() / .change() / .focus() / .blur() shorthands), and fixed the previous /
 next year buttons, which jQuery UI 1.12+ left disabled (see _setDisabled).
+Element ids and option strings are no longer joined into HTML strings, and
+AltField is looked up as a selector only (the same issue as jQuery UI's
+CVE-2021-41182 in the datepicker).
 
 Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
 This program is free software: you can redistribute it and/or modify
@@ -85,6 +88,19 @@ along with this program.  If not, see
         return Function.prototype.bind.apply(fn, Array.prototype.slice.call(arguments, 1));
     };
 
+    // AltField is a selector (or an element). Passing a string to $() would
+    // also create HTML from it, so look strings up as selectors only.
+    function _altField(_value) {
+        if (typeof _value !== 'string') {
+            return $(_value);
+        }
+        try {
+            return $(document).find(_value);
+        } catch (e) {
+            return $();
+        }
+    }
+
     function _isNumeric(obj) {
         var type = typeof obj;
         return (type === 'number' || type === 'string') && !isNaN(obj - parseFloat(obj));
@@ -160,7 +176,9 @@ along with this program.  If not, see
 
     function _makeDefaultButton(options) {
         // this refers to the associated input field.
-        return $('<span id="MonthPicker_Button_' + this.id + '" class="month-picker-open-button">' + options.i18n.buttonText + '</span>')
+        return $('<span class="month-picker-open-button"></span>')
+            .attr('id', 'MonthPicker_Button_' + this.id)
+            .text(options.i18n.buttonText)
             .jqueryUIButton({
                 text: false,
                 icons: {
@@ -422,7 +440,9 @@ along with this program.  If not, see
                 _el.css('width', 'auto');
             }
 
-            var _menu = this._monthPickerMenu = $('<div id="MonthPicker_' + _el[0].id + '" class="month-picker ui-widget ui-widget-content ui-corner-all"></div>').hide();
+            var _menu = this._monthPickerMenu = $('<div class="month-picker ui-widget ui-widget-content ui-corner-all"></div>')
+                .attr('id', 'MonthPicker_' + _el[0].id)
+                .hide();
             var isInline = _isInline(_el);
 
             $(_markup).appendTo(_menu);
@@ -549,7 +569,7 @@ along with this program.  If not, see
 
         Clear: function () {
             this.element.val('');
-            $(this.options.AltField).val('');
+            _altField(this.options.AltField).val('');
             this._validationMessage.hide();
         },
 
@@ -769,7 +789,9 @@ along with this program.  If not, see
         _createValidationMessage: function () {
             var _errMsg = this.options.ValidationErrorMessage, _elem = this.element;
             if ($.inArray(_errMsg, [null, '']) === -1) {
-                var _msgEl = $('<span id="MonthPicker_Validation_' + _elem[0].id + '" class="month-picker-invalid-message">' + _errMsg + '</span>');
+                var _msgEl = $('<span class="month-picker-invalid-message"></span>')
+                    .attr('id', 'MonthPicker_Validation_' + _elem[0].id)
+                    .text(_errMsg);
 
                 var _button = this._monthPickerButton;
                 this._validationMessage = _msgEl.insertAfter(_button.length ? _button : _elem);
@@ -877,7 +899,7 @@ along with this program.  If not, see
         // Therefore it's important to update the input field
         // before calling this method.
         _updateAlt: function (noop, date) {
-            var _field = $(this.options.AltField);
+            var _field = _altField(this.options.AltField);
             if (_field.length) {
                 _field.val( this._formatMonth(date, this.options.AltFormat) );
             }

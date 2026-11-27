@@ -134,12 +134,14 @@ Version numbers are `<upstream version>.<fork release>`. For example 5.1.6.1 is 
 * In the plugin's own scripts, replaced deprecated jQuery shorthand (`.click( fn )`, `.change( fn )` and the `:first` selector) with `.on()` and `.first()`, and toggled the tracking number field with `.prop( 'disabled' )` instead of `.removeAttr( 'disabled' )`, ahead of jQuery 4. WordPress 7.2 ships jQuery Migrate 3.6.0, which reports them in the console.
 * The month picker field now works with jQuery 4. The bundled MonthPicker 3.0.4, which is no longer maintained upstream, called `$.isNumeric`, `$.trim` and `$.isFunction`, which jQuery 4 removed, so the picker did not open on sites whose theme loads jQuery 4. The bundled copy is now the readable source with those calls replaced (and `$.proxy` and the event shorthand as well), instead of the minified file.
 * Fixed the previous / next year buttons of the month picker, which stayed disabled unless `MinMonth` or `MaxMonth` was set (an incompatibility with jQuery UI 1.12 and later).
+* Hardened the month picker: it no longer builds HTML by joining the field id or option strings, `AltField` is looked up as a selector only, and HTML tags are stripped from the options in the `js` attribute.
 * Tested on WordPress 7.2.
 * セキュリティ: 問い合わせデータの CSV 出力で、先頭が `=`・`+`・`-`・`@`・タブ・改行の値の前に `'` を付けるようにしました。Excel などはこれらを数式として扱うため、送信された値が CSV を開いたときに数式として動くおそれがありました（CSV インジェクション）。`-1` のような負の数や、`+81-90-0000-0000` のような国際電話番号も、ファイル上では先頭に `'` が付きます。CSV をほかのシステムに取り込んでいる場合は、`'` の扱いを確かめてください。上流 5.1.9 の修正の移植です。
 * 上流 5.1.9 のもう 1 つの修正（セッションの Cookie の検証）は、このフォークでは 5.1.6.2 から入っているため、変更はありません。
 * jQuery 4 に備えて、このプラグイン自身の JS にある非推奨の書き方（`.click( fn )`・`.change( fn )`・`:first`）を `.on()` と `.first()` に置き換えました。問い合わせ番号の入力欄の有効・無効も、`.removeAttr( 'disabled' )` ではなく `.prop( 'disabled' )` で切り替えます。
 * 月選択フィールドが jQuery 4 で動くようにしました。同梱の MonthPicker 3.0.4 は上流の更新が止まっていて、jQuery 4 で削除された `$.isNumeric`・`$.trim`・`$.isFunction` を使っていたため、テーマが jQuery 4 を読み込むサイトでは選択画面が開きませんでした。minify 済みのファイルをやめ、これらの呼び出し（あわせて `$.proxy` とイベントの省略形）を置き換えた、読めるソースを同梱します。
 * 月選択の前の年・次の年のボタンが、`MinMonth` か `MaxMonth` を指定しないと押せないままだった不具合を直しました（jQuery UI 1.12 以降との相性の問題です）。
+* 月選択の守りを固めました。フィールドの id や設定の文字列をつないで HTML を組み立てるのをやめ、`AltField` はセレクタとしてだけ扱い、`js` 属性の設定からは HTML のタグを取り除きます。
 * WordPress 7.2 で動作を確認しました。
 
 = 5.1.8.2 =
